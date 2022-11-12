@@ -49,10 +49,10 @@ class MainActivity : AppCompatActivity() {
            //show(it)
        }
     }
-    private fun show(location: Location){
-        binding.longatude.text = location.longitude.toString()
-        binding.latitude.text = location.latitude.toString()
-        binding.speed.text = location.speed.toString()
-
-    }
+//    private fun show(location: Location){
+//        location.longitude.toString().also { binding.longatude.text = it }
+//        binding.latitude.text = location.latitude.toString()
+//        binding.speed.text = location.speed.toString()
+//
+//    }
 }
