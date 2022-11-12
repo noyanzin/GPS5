@@ -43,16 +43,15 @@ class MainActivity : AppCompatActivity() {
             }
        task.addOnSuccessListener {
            Log.i("flow","show")
-           binding.longatude.text = it?.longitude.toString()
-           binding.latitude.text = it?.latitude.toString()
-           binding.speed.text = it?.speed.toString()
-           //show(it)
+           if (it != null) {
+               show(it)
+           }
        }
     }
-//    private fun show(location: Location){
-//        location.longitude.toString().also { binding.longatude.text = it }
-//        binding.latitude.text = location.latitude.toString()
-//        binding.speed.text = location.speed.toString()
-//
-//    }
+    private fun show(location: Location){
+        binding.longatude.text = location.longitude.toString()
+        binding.latitude.text = location.latitude.toString()
+        binding.speed.text = location.speed.toString()
+
+    }
 }
