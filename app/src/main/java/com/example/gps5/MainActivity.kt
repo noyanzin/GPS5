@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,0).build()
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,10000).build()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
@@ -59,24 +59,35 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun fetchLocation(){
-        Log.i("flow","fetchLocation start")
+    private fun fetchLocation() {
+        Log.i("flow", "fetchLocation start")
         val task = fusedLocationProviderClient.lastLocation
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
-                Log.i("flow", "fetchLocation request permission")
-                return
+        if (checkPermissions()) {
+            task.addOnSuccessListener {
+                Log.i("flow", "show")
+                if (it != null) {
+                    show(it)
+                }
             }
-       task.addOnSuccessListener {
-           Log.i("flow","show")
-           if (it != null) {
-               show(it)
-           }
-       }
+        }
     }
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                101
+            )
+            Log.i("flow", "fetchLocation request permission")
+            return true
+        }
+        return false
+    }
+
     private fun show(location: Location){
         binding.longatude.text = location.longitude.toString()
         binding.latitude.text = location.latitude.toString()
