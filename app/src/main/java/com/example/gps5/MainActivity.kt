@@ -18,75 +18,30 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var gps: Gps
     private lateinit var binding: ActivityMainBinding
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
     override fun onResume() {
         super.onResume()
-        startLocationUpdates()
-    }
-    private lateinit var locationCallback: LocationCallback
-    private fun startLocationUpdates() {
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.getMainLooper()
-        )
+        gps.startLocationUpdates()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        gps = Gps(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.i("flow", "onStart")
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,10000).build()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                p0 ?: return
-                for(location in p0.locations){
-                    Log.i("flow","Update UI with locationResult data")
-                    show(location)
-                }
-
-            }
-        }
         binding.btnLast.setOnClickListener {
             Log.i("flow", "GetLastLocation")
-            fetchLocation()
+            gps.fetchLocation(this)
         }
+        gps.listener = {
+            show(gps.location)
+        }
+    }
 
-    }
-    private fun fetchLocation() {
-        Log.i("flow", "fetchLocation start")
-        val task = fusedLocationProviderClient.lastLocation
-        if (checkPermissions()) {
-            task.addOnSuccessListener {
-                Log.i("flow", "show")
-                if (it != null) {
-                    show(it)
-                }
-            }
-        }
-    }
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                101
-            )
-            Log.i("flow", "fetchLocation request permission")
-            return true
-        }
-        return false
-    }
 
     private fun show(location: Location){
         binding.longatude.text = location.longitude.toString()
