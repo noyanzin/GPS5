@@ -22,10 +22,10 @@ class Gps() {
             Looper.getMainLooper()
         )
     }
-    public fun fetchLocation(context: Context) {
+    public fun fetchLocation() {
         Log.i("flow", "fetchLocation start")
         val task = fusedLocationProviderClient.lastLocation
-        if (checkPermissions(context)) {
+        if (checkPermissions()) {
             task.addOnSuccessListener {
                 Log.i("flow", "show")
                 if (it != null) {
@@ -34,15 +34,15 @@ class Gps() {
             }
         }
     }
-    private fun checkPermissions(context: Context): Boolean {
+    private fun checkPermissions(): Boolean {
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+            && ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
+                activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 101
             )
@@ -51,9 +51,13 @@ class Gps() {
         }
         return false
     }
+    public lateinit var activity: Activity
+    public lateinit var context: Context
     public lateinit var location: Location
-    constructor(activity: Activity) : this() {
-        fetchLocation(activity)
+    constructor(activity_: Activity, context_: Context) : this() {
+        this.context = context_
+        this.activity = activity_
+        fetchLocation()
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,10000).build()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
         locationCallback = object : LocationCallback() {

@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "GPS5"
 include ':app'
-include ':GPS'

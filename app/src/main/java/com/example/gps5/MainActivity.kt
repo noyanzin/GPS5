@@ -26,16 +26,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        gps = Gps(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.i("flow", "onStart")
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        gps = Gps(this, applicationContext)
         binding.btnLast.setOnClickListener {
             Log.i("flow", "GetLastLocation")
-            gps.fetchLocation(this)
+            gps.fetchLocation()
         }
         gps.listener = {
             show(gps.location)
