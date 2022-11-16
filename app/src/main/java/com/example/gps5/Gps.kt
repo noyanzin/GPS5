@@ -12,6 +12,7 @@ import com.google.android.gms.location.*
 
 class Gps() {
     var listener: (()->Unit)? = null
+    var listenerUpdate: (()->Unit)? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
@@ -69,5 +70,17 @@ class Gps() {
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,10000).build()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
         fetchLocation()
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                p0 ?: return
+                for(l in p0.locations){
+                    Log.i("flow","Update UI with locationResult data")
+                    Log.i("flow", "Location: ${l.speed} ${l.latitude} ${l.longitude}")
+                    location = l
+                    listenerUpdate?.invoke()  //show(location)
+                }
+
+            }
+        }
     }
 }

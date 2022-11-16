@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         gps.listener = {
             show(gps.location)
         }
+        gps.listenerUpdate = {
+            show(gps.location)
+        }
 
         binding.btnLast.setOnClickListener {
             Log.i("flow", "GetLastLocation")
