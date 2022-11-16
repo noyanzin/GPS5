@@ -22,33 +22,41 @@ class Gps() {
             Looper.getMainLooper()
         )
     }
-    public fun fetchLocation() {
-        Log.i("flow", "fetchLocation start")
-        val task = fusedLocationProviderClient.lastLocation
-        if (checkPermissions()) {
-            task.addOnSuccessListener {
-                Log.i("flow", "show")
-                if (it != null) {
-                    listener?.invoke()// show(it)
-                }
-            }
-        }
-    }
-    private fun checkPermissions(): Boolean {
 
+    public fun fetchLocation() {
+        Log.i("flow", "fetchLocation started")
+        val task = fusedLocationProviderClient.lastLocation
+        Log.i("flow", "fusedProviderClient.lastLocation complete")
         if (ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
         ) {
+            Log.i("flow","Activity: ${this.activity}")
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 101
             )
-            Log.i("flow", "fetchLocation request permission")
-            return true
+            Log.i("flow", "request permission return true")
+            return
         }
+        task.addOnSuccessListener {
+            Log.i("flow", "addOnSuccessListener started")
+            if (it != null) {
+                Log.i("flow", "addOnSuccessListener invoke")
+                location = it
+                listener?.invoke()// show(it)
+            }
+            Log.i("flow", "addOnSuccessListener complete")
+        }
+
+    }
+    private fun checkPermissions(): Boolean {
+        Log.i("flow", "CheckPermission")
+        Log.i("flow", "Context: ${this.context}")
+
+        Log.i("flow", "Request permission return false")
         return false
     }
     public lateinit var activity: Activity
@@ -57,19 +65,9 @@ class Gps() {
     constructor(activity_: Activity, context_: Context) : this() {
         this.context = context_
         this.activity = activity_
-        fetchLocation()
+        Log.i("flow","Activity: $activity, Context: $context")
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,10000).build()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                for(loc in p0.locations){
-                    Log.i("flow","Update UI with locationResult data")
-                    location = loc
-                //show(location)// CallBack function
-                }
-
-            }
-        }
-
+        fetchLocation()
     }
 }

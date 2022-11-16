@@ -32,14 +32,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        gps = Gps(this, applicationContext)
+        gps = Gps(this, this)
+        gps.listener = {
+            show(gps.location)
+        }
+
         binding.btnLast.setOnClickListener {
             Log.i("flow", "GetLastLocation")
             gps.fetchLocation()
         }
-        gps.listener = {
-            show(gps.location)
-        }
+
     }
 
 
